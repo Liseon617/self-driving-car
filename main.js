@@ -20,7 +20,6 @@ if(localStorage.getItem("bestBrain")){//checking if best brain exists in local s
             NeuralNetwork.mutate(cars[i].brain, mutationRate);
         }
     }
-
 }
 let trafficRows = 10;
 

@@ -33,7 +33,6 @@ class Visualiser{
     static drawLevel(ctx, level, left, top, width, height, outputLabels){
         const right = left+width;
         const bottom = top+height;
-
         const {inputs, outputs, weights, biases} = level;
         const nodeRadius = 18;
 
@@ -63,6 +62,7 @@ class Visualiser{
             ctx.fillStyle=getRGBA(inputs[i]);
             ctx.fill();
         }
+
         for (let i = 0; i < outputs.length; i++) {
             const x=Visualiser.#getNodeX(outputs, i, left, right)
             ctx.beginPath();
