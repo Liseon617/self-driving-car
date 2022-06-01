@@ -99,8 +99,8 @@ function generateTraffic(type, Roadrows = 5, startRow = -bestCar.y, rowAmount){
 
 function animate(time){
     if(traffic[traffic.length-1].y > bestCar.y + trafficRows*15){
-        //mutationRate-=mutationRate*0.01
-        mutationRate=0
+        mutationRate-=mutationRate*0.01
+        //mutationRate=0
         localStorage.setItem("currentMutation", JSON.stringify(mutationRate));
         save();
         window.location.reload();
