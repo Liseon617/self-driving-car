@@ -9,7 +9,7 @@ const carCtx = carCanvas.getContext("2d");
 const networkCtx = networkCanvas.getContext("2d");
 const road = new Road(carCanvas.width/2, carCanvas.width*0.9, 5);
 const cars = generateCars(200);
-let mutationRate = !localStorage.getItem("currentMutation") ?  0.1 : localStorage.getItem("currentMutation");
+let mutationRate = !localStorage.getItem("currentMutation") ?  0.1 : parseFloat(localStorage.getItem("currentMutation")) == NaN ? 0.1 : parseFloat(localStorage.getItem("currentMutation"));
 let bestCar = cars[0];
 if(localStorage.getItem("bestBrain")){//checking if best brain exists in local storage
     for (let i = 0; i < cars.length; i++) {
