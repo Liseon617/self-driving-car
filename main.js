@@ -9,7 +9,9 @@ const carCtx = carCanvas.getContext("2d");
 const networkCtx = networkCanvas.getContext("2d");
 const road = new Road(carCanvas.width/2, carCanvas.width*0.9, 5);
 const cars = generateCars(200);
-let mutationRate = !localStorage.getItem("currentMutation") ?  0.1 : parseFloat(localStorage.getItem("currentMutation")) == NaN ? 0.1 : parseFloat(localStorage.getItem("currentMutation"));
+let mutationRate = !localStorage.getItem("currentMutation") ?  0.1 : isNaN(parseFloat(localStorage.getItem("currentMutation"))) ? 0.1 : parseFloat(localStorage.getItem("currentMutation"));
+let generation = !localStorage.getItem("iteratedGeneration") ?  1 : isNaN(parseFloat(localStorage.getItem("iteratedGeneration"))) ? 1 : parseFloat(localStorage.getItem("iteratedGeneration"))+0.01;
+localStorage.setItem("iteratedGeneration", JSON.stringify(generation));
 let bestCar = cars[0];
 if(localStorage.getItem("bestBrain")){//checking if best brain exists in local storage
     for (let i = 0; i < cars.length; i++) {
@@ -28,13 +30,17 @@ let traffic = generateTraffic("constant", trafficRows, 0, 2) //generate random t
 animate();
 
 function save() {
-    localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain)); 
+    generation+=1
+    localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
+    localStorage.setItem("currentMutation", JSON.stringify(mutationRate));
+    localStorage.setItem("iteratedGeneration", JSON.stringify(generation));
     //serialising the best car's brain in local storage
 }
 
 function discard(){
     localStorage.removeItem("bestBrain");
     localStorage.removeItem("currentMutation");
+    localStorage.removeItem("iteratedGeneration");
 }
 
 function generateCars(N){
@@ -97,21 +103,29 @@ function generateTraffic(type, Roadrows = 5, startRow = -bestCar.y, rowAmount){
     }
 }*/
 
+function reLoad(){
+    mutationRate+=mutationRate*0.005
+    save();
+    window.location.reload();
+}
+
 function animate(time){
+    //prevent slow completion, use time and stated number of trafficRows to determine whether or not to reload.
+    if(time > trafficRows*5000){
+        reLoad()
+    }
+
     if(traffic[traffic.length-1].y > bestCar.y + trafficRows*15){
         mutationRate-=mutationRate*0.01
         //mutationRate=0
-        localStorage.setItem("currentMutation", JSON.stringify(mutationRate));
-        save();
-        window.location.reload();
+        reLoad()
     }
+
     if (cars.filter((el) => {
         return el.damaged==false
     }).length == 0){
         mutationRate+=mutationRate*0.05
-        localStorage.setItem("currentMutation", JSON.stringify(mutationRate));
-        save();
-        window.location.reload();
+        reLoad()
     }
     /*if (checkStalking) {
         mutationRate+=mutationRate*0.1
