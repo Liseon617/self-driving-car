@@ -16,7 +16,8 @@ let generation = !localStorage.getItem("iteratedGeneration") ?  1 : isNaN(parseF
 localStorage.setItem("iteratedGeneration", JSON.stringify(generation));
 let passed = !localStorage.getItem("courseCompletion") ?  0 : parseInt(localStorage.getItem("courseCompletion"));
 let bestCar = cars[0];
-let tempBrain;
+
+
 if(localStorage.getItem("bestBrain")){//checking if best brain exists in local storage
     for (let i = 0; i < cars.length; i++) {
         cars[i].brain=JSON.parse(
@@ -35,6 +36,7 @@ animate();
 
 function save(saveBrain = true) {
     if(saveBrain){
+        localStorage.setItem("courseCompletion", JSON.stringify(bestCar.brain));
         localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
         //serialising the best car's brain in local storage
     }
@@ -124,13 +126,21 @@ console.log(mutationRate)
     //to detect stalking, we can check the amount of times the reverse button is used in a period of time. 
     //the timer would start at the first use of the reverse. 3 in a period of time would constitute stalking.
     if(bestCar.stalkCount > trafficRows*75){
-        mutationRate+=mutationRate*0.05
-        reLoad(passed)
+        if(passed) {
+            mutationRate-=mutationRate*0.05
+            reLoad(!passed)
+        } else{
+            mutationRate+=mutationRate*0.05
+            reLoad(passed)
+        }
     }
     //prevent slow completion, use time and stated number of trafficRows to determine whether or not to reload.
     if(time > trafficRows*5000){
         mutationRate+=mutationRate*0.005
-        reLoad(passed)
+        if(passed)
+            reLoad(!passed)
+        else
+            reLoad(passed)
     }
 
     if(traffic[traffic.length-1].y > bestCar.y + trafficRows*15){
@@ -143,8 +153,13 @@ console.log(mutationRate)
     if (cars.filter((el) => {
         return el.damaged==false
     }).length == 0){
-        mutationRate+=mutationRate*0.05
-        reLoad(passed)
+        if(passed) {
+            mutationRate-=mutationRate*0.05
+            reLoad(!passed)
+        } else {
+            mutationRate+=mutationRate*0.05
+            reLoad(passed)
+        }
     }
     /*if (checkStalking) {
         mutationRate+=mutationRate*0.1
