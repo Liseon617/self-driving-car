@@ -119,10 +119,6 @@ function reLoad(saveBrain){
 }
 
 function animate(time){
-console.log(passed)
-console.log(bestCar.stalkCount)
-console.log(generation)
-console.log(mutationRate)
     //to detect stalking, we can check the amount of times the reverse button is used in a period of time. 
     //the timer would start at the first use of the reverse. 3 in a period of time would constitute stalking.
     if(bestCar.stalkCount > trafficRows*75){
