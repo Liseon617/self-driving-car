@@ -7,12 +7,16 @@ networkCanvas.width = window.innerWidth- carCanvas.width;
 
 const carCtx = carCanvas.getContext("2d");
 const networkCtx = networkCanvas.getContext("2d");
+
 const road = new Road(carCanvas.width/2, carCanvas.width*0.9, 5);
 const cars = generateCars(200);
+
 let mutationRate = !localStorage.getItem("currentMutation") ?  0.1 : isNaN(parseFloat(localStorage.getItem("currentMutation"))) ? 0.1 : parseFloat(localStorage.getItem("currentMutation"));
 let generation = !localStorage.getItem("iteratedGeneration") ?  1 : isNaN(parseFloat(localStorage.getItem("iteratedGeneration"))) ? 1 : parseFloat(localStorage.getItem("iteratedGeneration"))+0.01;
 localStorage.setItem("iteratedGeneration", JSON.stringify(generation));
+let passed = !localStorage.getItem("courseCompletion") ?  0 : parseInt(localStorage.getItem("courseCompletion"));
 let bestCar = cars[0];
+let tempBrain;
 if(localStorage.getItem("bestBrain")){//checking if best brain exists in local storage
     for (let i = 0; i < cars.length; i++) {
         cars[i].brain=JSON.parse(
@@ -29,18 +33,21 @@ let traffic = generateTraffic("constant", trafficRows, 0, 2) //generate random t
 
 animate();
 
-function save() {
-    generation+=1
-    localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
+function save(saveBrain = true) {
+    if(saveBrain){
+        localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
+        //serialising the best car's brain in local storage
+    }
     localStorage.setItem("currentMutation", JSON.stringify(mutationRate));
     localStorage.setItem("iteratedGeneration", JSON.stringify(generation));
-    //serialising the best car's brain in local storage
+    localStorage.setItem("courseCompletion", JSON.stringify(passed));
 }
 
 function discard(){
     localStorage.removeItem("bestBrain");
     localStorage.removeItem("currentMutation");
     localStorage.removeItem("iteratedGeneration");
+    localStorage.removeItem("courseCompletion");
 }
 
 function generateCars(N){
@@ -103,29 +110,41 @@ function generateTraffic(type, Roadrows = 5, startRow = -bestCar.y, rowAmount){
     }
 }*/
 
-function reLoad(){
-    mutationRate+=mutationRate*0.005
-    save();
+function reLoad(saveBrain){
+    generation+=1
+    save(saveBrain);
     window.location.reload();
 }
 
 function animate(time){
+console.log(passed)
+console.log(bestCar.stalkCount)
+console.log(generation)
+console.log(mutationRate)
+    //to detect stalking, we can check the amount of times the reverse button is used in a period of time. 
+    //the timer would start at the first use of the reverse. 3 in a period of time would constitute stalking.
+    if(bestCar.stalkCount > trafficRows*75){
+        mutationRate+=mutationRate*0.05
+        reLoad(passed)
+    }
     //prevent slow completion, use time and stated number of trafficRows to determine whether or not to reload.
     if(time > trafficRows*5000){
-        reLoad()
+        mutationRate+=mutationRate*0.005
+        reLoad(passed)
     }
 
     if(traffic[traffic.length-1].y > bestCar.y + trafficRows*15){
         mutationRate-=mutationRate*0.01
+        passed = 1;
         //mutationRate=0
-        reLoad()
+        reLoad(passed)
     }
 
     if (cars.filter((el) => {
         return el.damaged==false
     }).length == 0){
         mutationRate+=mutationRate*0.05
-        reLoad()
+        reLoad(passed)
     }
     /*if (checkStalking) {
         mutationRate+=mutationRate*0.1

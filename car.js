@@ -1,5 +1,5 @@
 class Car {
-    constructor(x, y, width, height, controlType,maxSpeed=3, colour="blue"){
+    constructor(x, y, width, height, controlType,maxSpeed=3, colour="blue", stalkCount=0){
         this.x=x;
         this.y=y;
         this.width=width;
@@ -12,6 +12,8 @@ class Car {
         this.friction=0.05;
         this.angle=0;
         this.damaged=false;
+        this.stalkCount=stalkCount;
+
 
         this.useBrain=controlType=="AI";//if controlType is "AI" this.useBrain will be in use
 
@@ -112,8 +114,15 @@ class Car {
     }
 
     #move(){
-        if(this.controls.forward){this.speed+=this.acceleration;}//accelerating when going forward
-        if(this.controls.reverse){this.speed-=this.acceleration;}//accelarting when going backwards
+        if(this.controls.forward){//accelerating when going forward
+            this.speed+=this.acceleration;
+        }
+        if(this.controls.reverse){//accelarting when going backwards
+            this.speed-=this.acceleration;
+        }
+        if(!this.controls.forward || this.controls.reverse){
+            this.stalkCount+=1
+        }
 
         if(this.speed>0){
             this.speed-=this.friction;
