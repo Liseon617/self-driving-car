@@ -36,7 +36,6 @@ animate();
 
 function save(saveBrain = true) {
     if(saveBrain){
-        localStorage.setItem("courseCompletion", JSON.stringify(bestCar.brain));
         localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
         //serialising the best car's brain in local storage
     }
