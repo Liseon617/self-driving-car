@@ -45,7 +45,7 @@ class Level {
         this.inputs = new Array(inputCount); //Array housing input neurons; these inputs are the values we get form the car sensor
         this.outputs = new Array(outputCount); //Array housing output neurons; from the inputs, we need to compute the output based the defined weights and biases 
         this.biases = new Array(outputCount); //each output neuron has a biase, of which it will fire
-
+        
         this.weights=[];
         for (let i = 0; i < inputCount; i++) {
             this.weights[i]=new Array(outputCount);//for each input node there should output count number of connections
